@@ -1,0 +1,18 @@
+{
+    "config": {
+        "platform": {
+            "php": "7.4"
+        },
+        "optimize-autoloader": true
+    },
+    "autoload": {
+        "classmap": ["src", "mvc"]
+    },
+    "require": {
+        "php-di/php-di": "^6.4",
+        "symfony/http-kernel": "^5.4",
+        "monolog/monolog": "^2.8",
+        "twig/twig": "^3.4",
+        "bramus/router": "^1.6"
+    }
+}

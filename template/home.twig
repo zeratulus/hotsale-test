@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+        .hidden {
+            opacity: 0;
+        }
+        .fadeOut {
+            animation: 1 1s fadeOut;
+        }
+        .alert.alert-danger p:last-child {
+            margin-bottom: 0;
+        }
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center">Registration Form</h1>
+    <form id="form-register">
+        <div class="mb-3">
+            <label for="input-first-name" class="form-label">First Name *</label>
+            <input type="text" class="form-control" id="input-first-name" aria-describedby="input-first-name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="input-last-name" class="form-label">Last Name *</label>
+            <input type="text" class="form-control" id="input-last-name" aria-describedby="input-last-name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="input-email" class="form-label">Email address *</label>
+            <input type="email" class="form-control" id="input-email" aria-describedby="input-email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="input-password" class="form-label">Password *</label>
+            <input type="password" class="form-control" id="input-password" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="input-password-confirm" class="form-label">Confirm Password *</label>
+            <input type="password" class="form-control" id="input-password-confirm" required>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button type="submit" id="btn-submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    addEventListener('DOMContentLoaded', function () {
+        function getErrorElementHTML(id, message) {
+            return `<div id="${id}" class="form-text text-danger form-error-text"><small>${message}</small></div>`;
+        }
+
+        function validate() {
+            let result = true;
+
+            document.querySelector('.alert')?.remove();
+            let errors = document.querySelectorAll('.form-error-text');
+            errors.forEach((value) => {
+                value.remove();
+            })
+
+            let inputEmail = document.querySelector('#input-email');
+            let inputPassword = document.querySelector('#input-password');
+            let inputPasswordConfirmation = document.querySelector('#input-password-confirm');
+
+            let email = inputEmail.value.trim();
+            let password = inputPassword.value.trim();
+            let password_confirmation = inputPasswordConfirmation.value.trim();
+
+            if (email.indexOf('@') === -1) {
+                inputEmail.insertAdjacentHTML('afterend', getErrorElementHTML('error-email', 'Error: Email must contain @ symbol.'));
+                result = false;
+            }
+
+            // if (password === '' || password_confirmation === '') {
+            //     inputPasswordConfirmation.insertAdjacentHTML('afterend', getErrorElementHTML('error-password-empty', 'Error: Any of passwords can`t be empty.'));
+            // }
+
+            if (password !== password_confirmation) {
+                inputPasswordConfirmation.insertAdjacentHTML('afterend', getErrorElementHTML('error-password', 'Error: Provided passwords not equal.'));
+                result = false;
+            }
+
+            return result;
+        }
+
+        async function send() {
+            let data = {
+                'first_name': document.querySelector('#input-first-name').value,
+                'last_name': document.querySelector('#input-last-name').value,
+                'email': document.querySelector('input[type="email"]').value,
+                'password': document.querySelector('#input-password').value,
+                'password_confirmation': document.querySelector('#input-password-confirm').value,
+            };
+
+            axios.post('ajax_handler', data).then(response => {
+                console.log(response);
+                if (response.data.success === false) {
+                    let messages = `<div class="alert alert-danger">`;
+                    for (let error in response.data.errors) {
+                        messages += `<p>${response.data.errors[error]}</p>`;
+                    }
+                    messages += '</div>';
+                    console.log(messages);
+                    document.querySelector('#form-register').insertAdjacentHTML('beforebegin', messages);
+                } else {
+                    document.querySelector('h1').innerHTML = 'Successfully registered!';
+                    document.querySelector('form').classList.add('fadeOut');
+                    setTimeout(function () {
+                        let form = document.querySelector('form');
+                        form.classList.add('hidden');
+                        form.classList.remove('fadeOut');
+                    }, 900)
+                }
+            })
+        }
+
+        document.querySelector('#btn-submit').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (validate()) {
+                send();
+            }
+        });
+    });
+</script>
+<script src="node_modules/axios/dist/axios.min.js"></script>
+<script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
