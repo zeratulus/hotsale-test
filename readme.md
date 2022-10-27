@@ -13,7 +13,7 @@ Written from scratch... around 4 - 5 hours
 
 Have a nice day.
 
-With Best regards Sehii Herenko =]
+With Best regards Serhii Herenko =]
 
 Task:
 
